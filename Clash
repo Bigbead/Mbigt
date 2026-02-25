@@ -1,0 +1,511 @@
+# ==================== 代理提供者配置 ====================
+proxy-providers:
+  # 月流量机场（优先使用）- RED, NB
+  RED:
+    type: http
+    url: "https://kaimenlai.com/clashx/00155233-9ba7-4fc7-81af-d04bdfb2a6db"
+    interval: 86400
+    path: ./proxy_provider/RED.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: https://www.gstatic.com/generate_204
+    override:
+      udp: true
+      prefix-name: "[RED] "
+
+  NB:
+    type: http
+    url: "https://zhuzhuzhu.whtjdasha.com/api/v1/client/subscribe?token=e2b857ee05bee643765a9a5de20c94ab"
+    interval: 86400
+    path: ./proxy_provider/NB.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: https://www.gstatic.com/generate_204
+    override:
+      udp: true
+      prefix-name: "[NB] "
+
+  # 无限时间机场（次要使用）- SEA, THERR
+  SEA:
+    type: http
+    url: "https://sub01.sh-cloudflare.sbs:8443/api/v1/client/subscribe?token=52efaed8995ad7288387fa93b4b536cb"
+    interval: 86400
+    path: ./proxy_provider/SEA.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: https://www.gstatic.com/generate_204
+    override:
+      udp: true
+      prefix-name: "[SEA] "
+
+  THERR:
+    type: http
+    url: "https://get.83289483.org/api/eodgatrqm/token=5ddd333ad80a4ba835a73a487eaa8902"
+    interval: 86400
+    path: ./proxy_provider/THERR.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: https://www.gstatic.com/generate_204
+    override:
+      udp: true
+      prefix-name: "[THERR] "
+
+# ==================== 直连节点 ====================
+proxies:
+  - name: 直连
+    type: direct
+
+# ==================== 代理策略组 ====================
+proxy-groups:
+  # ========== 主代理组（自动优先级） ==========
+  - name: "🚀 智能代理"
+    type: fallback
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 20
+    proxies:
+      - "🔄 月流量优先"
+      - "♻️ 全球自动"
+      - "🌐 全部节点"
+      - 直连
+
+  # ========== 自动策略组 ==========
+  - name: "🔄 月流量优先"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+    filter: "^(?!.*(过期|已用|已过期|流量|官网|客服|网站|订阅|邀请|返利)).*$"
+
+  - name: "♻️ 全球自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+
+  - name: "🌐 全部节点"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+
+  # ========== 地区策略组 ==========
+  - name: "🇭🇰 香港自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(港|HK|Hong|深港|HKG|九龙)'
+
+  - name: "🇹🇼 台湾自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(台|TW|Taiwan|新北)'
+
+  - name: "🇯🇵 日本自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(日|JP|Japan|东京|大阪)'
+
+  - name: "🇺🇸 美国自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(美|US|America|洛杉矶|纽约|硅谷)'
+
+  - name: "🇸🇬 新加坡自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(新加坡|坡|SG|Singapore)'
+
+  - name: "🇰🇷 韩国自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(韩|KR|Korea|首尔|韩国)'
+
+  - name: "🇩🇪 欧洲自动"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(德|DE|Germany|法兰克福|英|UK|英国|伦敦|法|FR|法国|巴黎|俄|RU|俄罗斯)'
+
+  # ========== 地区手动选择组 ==========
+  - name: "🇭🇰 香港手动"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(港|HK|Hong|深港|HKG|九龙)'
+
+  - name: "🇹🇼 台湾手动"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(台|TW|Taiwan|新北)'
+
+  - name: "🇯🇵 日本手动"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(日|JP|Japan|东京|大阪)'
+
+  - name: "🇺🇸 美国手动"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(美|US|America|洛杉矶|纽约|硅谷)'
+
+  - name: "🇸🇬 新加坡手动"
+    type: select
+    use:
+      - RED
+      - NB
+      - SEA
+      - THERR
+    filter: '(?i)(新加坡|坡|SG|Singapore)'
+
+  # ========== 服务专用策略组（简化版） ==========
+  - name: "📹 YouTube"
+    type: select
+    proxies:
+      # 自动选项
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      # 手动选项
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+      - "🇯🇵 日本手动"
+      - "🇺🇸 美国手动"
+      # 其他
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "🍀 Google"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+      - "🇯🇵 日本手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "🤖 AI"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇺🇸 美国自动"
+      - "🇯🇵 日本自动"
+      - "🇸🇬 新加坡自动"
+      - "🇺🇸 美国手动"
+      - "🇯🇵 日本手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "👨🏿‍💻 GitHub"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇺🇸 美国自动"
+      - "🇭🇰 香港自动"
+      - "🇯🇵 日本自动"
+      - "🇺🇸 美国手动"
+      - "🇭🇰 香港手动"
+      - "🇯🇵 日本手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "🐬 OneDrive"
+    type: select
+    proxies:
+      - 直连
+      - "🚀 智能代理"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+
+  - name: "🪟 Microsoft"
+    type: select
+    proxies:
+      - 直连
+      - "🚀 智能代理"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+
+  - name: "🎵 TikTok"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇯🇵 日本自动"
+      - "🇺🇸 美国自动"
+      - "🇰🇷 韩国自动"
+      - "🇯🇵 日本手动"
+      - "🇺🇸 美国手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "📲 Telegram"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+      - "🇯🇵 日本手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "🎥 NETFLIX"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇺🇸 美国自动"
+      - "🇸🇬 新加坡手动"
+      - "🇯🇵 日本手动"
+      - "🇺🇸 美国手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "✈️ Speedtest"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇭🇰 香港自动"
+      - "🇯🇵 日本自动"
+      - "🇸🇬 新加坡自动"
+      - "🇭🇰 香港手动"
+      - "🇯🇵 日本手动"
+      - "🇸🇬 新加坡手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "💶 PayPal"
+    type: select
+    proxies:
+      - "🚀 智能代理"
+      - "♻️ 全球自动"
+      - "🇺🇸 美国自动"
+      - "🇸🇬 新加坡自动"
+      - "🇺🇸 美国手动"
+      - "🇸🇬 新加坡手动"
+      - "🌐 全部节点"
+      - 直连
+
+  - name: "🍎 Apple"
+    type: select
+    proxies:
+      - 直连
+      - "🚀 智能代理"
+      - "🇭🇰 香港自动"
+      - "🇸🇬 新加坡自动"
+      - "🇯🇵 日本自动"
+      - "🇭🇰 香港手动"
+      - "🇸🇬 新加坡手动"
+
+# ==================== 规则配置 ====================
+rules:
+  # ========== 自定义规则 ==========
+  - SRC-IP-CIDR,192.168.2.238/32,DIRECT
+  - DOMAIN-KEYWORD,tracker,DIRECT
+  
+  # ========== 解决微信/QQ登录问题（王者荣耀等） ==========
+  - DOMAIN-SUFFIX,weixin.qq.com,直连
+  - DOMAIN-SUFFIX,open.weixin.qq.com,直连
+  - DOMAIN-SUFFIX,qyapi.weixin.qq.com,直连
+  - DOMAIN-SUFFIX,pvp.qq.com,直连
+  - DOMAIN-SUFFIX,game.qq.com,直连
+  - DOMAIN-SUFFIX,tencent.com,直连
+  - DOMAIN-SUFFIX,qq.com,直连
+  - DOMAIN-SUFFIX,tencent-cloud.com,直连
+  
+  # ========== 规则集引用 ==========
+  - RULE-SET,private_domain,直连
+  - RULE-SET,apple_domain,🍎 Apple
+  - RULE-SET,ai,🤖 AI
+  - RULE-SET,github_domain,👨🏿‍💻 GitHub
+  - RULE-SET,youtube_domain,📹 YouTube
+  - RULE-SET,google_domain,🍀 Google
+  - RULE-SET,onedrive_domain,🐬 OneDrive
+  - RULE-SET,microsoft_domain,🪟 Microsoft
+  - RULE-SET,tiktok_domain,🎵 TikTok
+  - RULE-SET,speedtest_domain,✈️ Speedtest
+  - RULE-SET,telegram_domain,📲 Telegram
+  - RULE-SET,netflix_domain,🎥 NETFLIX
+  - RULE-SET,paypal_domain,💶 PayPal
+  - RULE-SET,gfw_domain,🚀 智能代理
+  - RULE-SET,geolocation-!cn,🚀 智能代理
+  - RULE-SET,cn_domain,直连
+  - RULE-SET,google_ip,🍀 Google,no-resolve
+  - RULE-SET,netflix_ip,🎥 NETFLIX,no-resolve
+  - RULE-SET,telegram_ip,📲 Telegram,no-resolve
+  - RULE-SET,cn_ip,直连,no-resolve
+  
+  # 漏网之鱼
+  - MATCH,🚀 智能代理
+
+# ==================== 规则提供者（保持不变） ====================
+rule-anchor:
+  ip: &ip
+    type: http
+    interval: 86400
+    behavior: ipcidr
+    format: mrs
+  domain: &domain
+    type: http
+    interval: 86400
+    behavior: domain
+    format: mrs
+
+rule-providers:
+  private_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs"
+  ai:
+    <<: *domain
+    url: "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/category-ai-!cn.mrs"
+  youtube_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/youtube.mrs"
+  google_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/google.mrs"
+  github_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/github.mrs"
+  telegram_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs"
+  netflix_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/netflix.mrs"
+  paypal_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/paypal.mrs"
+  onedrive_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/onedrive.mrs"
+  microsoft_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/microsoft.mrs"
+  apple_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/apple-cn.mrs"
+  speedtest_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/ookla-speedtest.mrs"
+  tiktok_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/tiktok.mrs"
+  gfw_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/gfw.mrs"
+  geolocation-!cn:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.mrs"
+  cn_domain:
+    <<: *domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs"
+  cn_ip:
+    <<: *ip
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs"
+  google_ip:
+    <<: *ip
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/google.mrs"
+  telegram_ip:
+    <<: *ip
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/telegram.mrs"
+  netflix_ip:
+    <<: *ip
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/netflix.mrs"
